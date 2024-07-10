@@ -6,6 +6,8 @@ import { PGVectorStore, PGVectorStoreArgs } from "@langchain/community/vectorsto
 import { PoolConfig } from "pg";
 import { OpenAIEmbeddings } from "@langchain/openai";
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { GoogleGenerativeAIEmbeddings } from "@langchain/google-genai";
+
 
 @Injectable()
 export class DocStoreService {
@@ -60,8 +62,8 @@ export class DocStoreService {
 
     static async initialize(configService) {
         const docStore = new DocStoreService(configService);
-        const apiKey = docStore.configService.get("OPENAI_KEY")
-        docStore.vectorStore = await PGVectorStore.initialize(new OpenAIEmbeddings({openAIApiKey: apiKey}), docStore.config)
+        const embedding = await docStore.createEmbedding("GEMINI")
+        docStore.vectorStore = await PGVectorStore.initialize(embedding, docStore.config)
         await docStore.recordManager.createSchema();
         return docStore
     }
@@ -78,6 +80,20 @@ export class DocStoreService {
         })
     }
 
+    public async createEmbedding(type: string){
+        switch(type){
+            case "OPENAI":{
+                return new OpenAIEmbeddings(this.configService.get("OPENAI_KEY"))
+            }
+            case "GEMINI":{
+                return new GoogleGenerativeAIEmbeddings({
+                    apiKey : this.configService.get("GEMINI_API_KEY"),
+                    modelName : "embedding-001"
+                })
+            }
+        }
+    }
+
     public addText = async (text: string, source: string) => {
         const docs = await this.textSplitter.createDocuments([text], [{source: source}])
         return await this.addDocuments(docs)
@@ -86,6 +102,7 @@ export class DocStoreService {
     public addTextDoc = async (textDoc: {docArr : string[], source : string}) => {
         const metadata = Array(textDoc.docArr.length).fill({source : textDoc.source})
         const docs = await this.textSplitter.createDocuments(textDoc.docArr, metadata)
-        return await this.addDocuments(docs)
+        const ret =  await this.addDocuments(docs)
+        return ret
     }
 }

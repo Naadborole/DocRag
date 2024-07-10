@@ -11,8 +11,9 @@ export class DocExtractService {
         this.PDFExtract = new PDFExtract()
     }
 
-    public async extract(file: Buffer){
-        const data = await this.PDFExtract.extractBuffer(file,{})
+    public async extract(file: Buffer, fname: string){
+        let data = await this.PDFExtract.extractBuffer(file,{})
+        data.filename = fname
         return data
     }
 
@@ -22,6 +23,7 @@ export class DocExtractService {
                 return pageText += cont.str
             }, "")
         })
+
         let textDoc : {docArr : string[], source : string} = {
             docArr : textArr,
             source : pdfExtractResult.filename

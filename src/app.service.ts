@@ -11,13 +11,13 @@ export class AppService {
     return 'Hello World!';
   }
 
-  async getTextFromFile(file: Buffer) {
-    return this.docExtract.combineText(await this.docExtract.extract(file))
-  }
+  // async getTextFromFile(file) {
+  //   return this.docExtract.combineText(await this.docExtract.extract(file))
+  // }
 
-  async addFileToStore(file : Buffer) {
-    const textDoc : {docArr : string[], source : string} = await this.docExtract.combineText(await this.docExtract.extract(file))
-    return this.docStore.addTextDoc(textDoc)
+  async addFileToStore(file: Express.Multer.File) {
+    const textDoc : {docArr : string[], source : string} = await this.docExtract.combineText(await this.docExtract.extract(file.buffer, file.originalname))
+    return await this.docStore.addTextDoc(textDoc)
   }
 
 }

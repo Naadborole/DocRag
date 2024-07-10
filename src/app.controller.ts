@@ -14,7 +14,7 @@ export class AppController {
   @Post("upload")
   @UseInterceptors(FileInterceptor('file'))
   postUpload(@UploadedFile() file: Express.Multer.File) {
-    this.appService.addFileToStore(file.buffer)
+    return this.appService.addFileToStore(file)
   }
 
 }

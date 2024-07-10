@@ -6,7 +6,6 @@ import { RagchainModule } from './ragchain/ragchain.module';
 import { DocStoreService } from './doc-store/doc-store.service';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { DocExtractService } from './doc-extract/doc-extract.service';
-import { EmbeddingFactoryService } from './embedding-factory/embedding-factory.service';
 
 
 @Module({
@@ -18,6 +17,6 @@ import { EmbeddingFactoryService } from './embedding-factory/embedding-factory.s
       return await DocStoreService.initialize(configService)
     },
     inject : [ConfigService]
-  }, DocExtractService, EmbeddingFactoryService],
+  }, DocExtractService],
 })
 export class AppModule {}
