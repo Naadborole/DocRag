@@ -1,4 +1,4 @@
-import { Controller, Get, Post, UploadedFile, UseInterceptors } from '@nestjs/common';
+import { Body, Controller, Get, Post, UploadedFile, UseInterceptors } from '@nestjs/common';
 import { AppService } from './app.service';
 import { FileInterceptor } from '@nestjs/platform-express';
 
@@ -15,6 +15,11 @@ export class AppController {
   @UseInterceptors(FileInterceptor('file'))
   postUpload(@UploadedFile() file: Express.Multer.File) {
     return this.appService.addFileToStore(file)
+  }
+
+  @Get("records")
+  getRecords(){
+    return this.appService.getRecords()
   }
 
 }
